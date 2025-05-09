@@ -5,64 +5,63 @@ using Personnel.Domain.ValueObjects;
 namespace Personnel.Domain.Entities;
 
 /// <summary>
-/// Описание сущночти Person
+/// Человек
 /// </summary>
 public class Person
 {
     /// <summary>
-    /// Gets the unique identifier of the person.
+    /// Идентификатор.
     /// </summary>
     public Guid Id { get; private set; }
 
     /// <summary>
-    /// Gets the name of the person.
+    /// ФИО.
     /// </summary>
-    public PersonName FIO { get; private set; }
+    public PersonName FullName { get; private set; }
 
     /// <summary>
-    /// Gets the email address of the person.
+    /// Электронная почта.
     /// </summary>
     public Email Email { get; private set; }
 
     /// <summary>
-    /// Gets the phone number associated with the person.
+    /// GНомер телефона.
     /// </summary>
     public Phone Phone { get; private set; }
 
     /// <summary>
-    /// Gets the birthdate of the person.
+    /// День рождения.
     /// </summary>
     public DateTime BirthDate { get; private set; }
 
     /// <summary>
-    /// Gets the avatar URL of the person.
+    /// Картинка-аватарка.
     /// </summary>
     public string? AvatarUrl { get; private set; }
 
     /// <summary>
-    /// Gets the gender of the person.
+    /// Гендер.
     /// </summary>
     public Gender Gender { get; private set; }
 
     /// <summary>
-    /// Gets the comment associated with the person. Provides additional details or notes about the person. Can be null.
+    /// Комментарий.
     /// </summary>
     public string? Comment { get; private set; }
 
     private readonly List<WorkExperience> _workExperiences = [];
 
     /// <summary>
-    /// Gets the collection of the person's work experiences.
+    /// Коллекция с информацией об опыте работы.
     /// </summary>
     public IReadOnlyCollection<WorkExperience> WorkExperiences => _workExperiences.AsReadOnly();
 
     public Person(Guid id, string firstName, string lastName, string middleName,
-        Email email, Phone phone, DateTime birthDate, Gender gender, PersonName fio, string? avatarUrl = null, string? comment = null)
+        Email email, Phone phone, DateTime birthDate, Gender gender, string? avatarUrl = null, string? comment = null)
     {
         Id = id;
         Email = email;
         Phone = phone;
-        FIO = fio;
         SetName(new PersonName(firstName, lastName, middleName));
         SetEmail(email);
         SetPhone(phone);
@@ -73,31 +72,31 @@ public class Person
     }
 
     /// <summary>
-    /// Updates the name of the person.
+    /// Присвоить ФИО.
     /// </summary>
     /// <param name="name">The new name of the person.</param>
-    public void SetName(PersonName name) => FIO = name;
+    public void SetName(PersonName name) => FullName = name;
 
     /// <summary>
-    /// Updates the email of the person.
+    /// Присвоить электронную почту.
     /// </summary>
     /// <param name="email">The new email address of the person.</param>
     public void SetEmail(Email email) => Email = email;
 
     /// <summary>
-    /// Updates the phone number of the person.
+    /// Присвоить номер телефона.
     /// </summary>
     /// <param name="phone">The new phone number of the person.</param>
     public void SetPhone(Phone phone) => Phone = phone;
 
     /// <summary>
-    /// Updates the birth date of the person.
+    /// Присвоить дату рождения.
     /// </summary>
-    /// <param name="birthDate">The new birth date of the person.</param>
+    /// <param name="birthDate">The new birthdate of the person.</param>
     public void SetBirthDate(DateTime birthDate) => BirthDate = birthDate;
 
     /// <summary>
-    /// Updates the avatar URL of the person.
+    /// Присвоить аватарку.
     /// </summary>
     /// <param name="avatarUrl">The new avatar URL of the person. Must be a valid .png or .jpg file path, or null.</param>
     /// <exception cref="ArgumentException">Thrown if the avatar URL does not end with .png or .jpg when not null or empty.</exception>
@@ -114,13 +113,13 @@ public class Person
     }
 
     /// <summary>
-    /// Updates the gender of the person.
+    /// Присвоить гендер.
     /// </summary>
     /// <param name="gender">The new gender of the person.</param>
     public void SetGender(Gender gender) => Gender = gender;
 
     /// <summary>
-    /// Updates the comment associated with the person.
+    /// Добавить комментарий.
     /// </summary>
     /// <param name="comment">The new comment for the person. Can be null.</param>
     public void SetComment(string? comment) => Comment = comment;

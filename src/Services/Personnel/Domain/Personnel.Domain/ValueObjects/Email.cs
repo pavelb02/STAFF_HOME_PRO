@@ -1,41 +1,25 @@
-﻿using Ardalis.GuardClauses;
+﻿using System.ComponentModel.DataAnnotations;
+using Ardalis.GuardClauses;
+using Personnel.Domain.Validation;
 
-namespace Personnel.Domain.Entities;
+namespace Personnel.Domain.ValueObjects;
 
 /// <summary>
-/// Email address.
+/// Адрес электронной почты.
 /// </summary>
 public class Email : ValueObject
 {
     private string _value = null!;
 
     /// <summary>
-    /// Gets the email address value.
+    /// Получает и записыват адрес электронной почты.
     /// </summary>
-    /// <remarks>
-    /// The value is a string representing a valid email address. It must not be null,
-    /// empty, or consist only of whitespace. The maximum length allowed is 255 characters,
-    /// and the value must contain the '@' symbol to be considered a valid email.
-    /// </remarks>
-    /// <exception cref="ArgumentException">
-    /// Thrown when the value exceeds 255 characters or does not contain the '@' symbol.
-    /// </exception>
-    /// <exception cref="ArgumentNullException">
-    /// Thrown when the value is null or consists of only whitespace.
-    /// </exception>
     public string Value
     {
         get => _value;
         private set
         {
             Guard.Against.NullOrWhiteSpace(value, nameof(Email));
-
-            if (value.Length > 255)
-                throw new ArgumentException("Email must not exceed 255 characters.", nameof(Email));
-
-            if (!value.Contains('@'))
-                throw new ArgumentException("Email must contain '@' symbol.", nameof(Email));
-
             _value = value;
         }
     }
@@ -47,6 +31,11 @@ public class Email : ValueObject
     public Email(string value)
     {
         Value = value;
+
+        var validator = new EmailValidator();
+        var result = validator.Validate(this);
+        if(!result.IsValid)
+            throw new ValidationException(result.Errors.ToString());
     }
 
     protected override IEnumerable<object> GetEqualityComponents()
@@ -55,8 +44,7 @@ public class Email : ValueObject
     }
 
     /// <summary>
-    /// Returns a string representation of the email value.
+    /// Возвращает адрес электронной почты в виде строки.
     /// </summary>
-    /// <returns>The email address as a string.</returns>
     public override string ToString() => Value;
 }

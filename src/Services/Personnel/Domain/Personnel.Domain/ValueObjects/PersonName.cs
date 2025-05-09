@@ -1,6 +1,6 @@
-﻿using System.Text.RegularExpressions;
-using Ardalis.GuardClauses;
-using Personnel.Domain.Entities;
+﻿using Ardalis.GuardClauses;
+using FluentValidation;
+using Personnel.Domain.Validation;
 
 namespace Personnel.Domain.ValueObjects;
 
@@ -21,20 +21,20 @@ public class PersonName : ValueObject
         get => _firstName;
         private set
         {
-            ValidateName(value, nameof(FirstName));
+            Guard.Against.NullOrWhiteSpace(value, nameof(FirstName));
             _firstName = value;
         }
     }
 
     /// <summary>
-    /// Свойство имя
+    /// Свойство имя.
     /// </summary>
     public string LastName
     {
         get => _lastName;
         private set
         {
-            ValidateName(value, nameof(LastName));
+            Guard.Against.NullOrWhiteSpace(value, nameof(LastName));
             _lastName = value;
         }
     }
@@ -47,7 +47,7 @@ public class PersonName : ValueObject
         get => _middleName;
         private set
         {
-            ValidateName(value, nameof(MiddleName));
+            Guard.Against.NullOrWhiteSpace(value, nameof(MiddleName));
             _middleName = value;
         }
     }
@@ -60,17 +60,11 @@ public class PersonName : ValueObject
         FirstName = firstName;
         LastName = lastName;
         MiddleName = middleName;
-    }
 
-    private void ValidateName(string name, string property)
-    {
-        Guard.Against.NullOrWhiteSpace(name, property);
-
-        if (name.Length < 2 || name.Length > 60)
-            throw new ArgumentException($"{property} must be between 2 and 60 characters.");
-
-        if (!Regex.IsMatch(name, "^[A-Za-zА-Яа-яЁё]+$"))
-            throw new ArgumentException($"{property} must contain only letters.");
+        var validator = new PersonNameValidator();
+        var result = validator.Validate(this);
+        if(!result.IsValid)
+            throw new ValidationException(result.Errors);
     }
 
     protected override IEnumerable<object> GetEqualityComponents()

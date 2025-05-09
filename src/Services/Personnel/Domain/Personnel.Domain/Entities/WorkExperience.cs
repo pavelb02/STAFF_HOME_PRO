@@ -1,4 +1,6 @@
 ﻿using Ardalis.GuardClauses;
+using FluentValidation;
+using Personnel.Domain.Validation;
 using Personnel.Domain.ValueObjects;
 
 namespace Personnel.Domain.Entities;
@@ -55,15 +57,6 @@ public class WorkExperience
         Guard.Against.NullOrWhiteSpace(position, nameof(Position));
         Guard.Against.NullOrWhiteSpace(organization, nameof(Organization));
 
-        if (position.Length > 250)
-            throw new ArgumentException("Position max length is 250");
-
-        if (organization.Length > 250)
-            throw new ArgumentException("Organization max length is 250");
-
-        if (endDate.HasValue && startDate > endDate.Value)
-            throw new ArgumentException("StartDate must be before EndDate");
-
         Id = id;
         Position = position;
         Organization = organization;
@@ -71,5 +64,10 @@ public class WorkExperience
         StartDate = startDate;
         EndDate = endDate;
         Description = description;
+
+        var validator = new WorkExperienceValidator();
+        var result = validator.Validate(this);
+        if(!result.IsValid)
+            throw new ValidationException(result.Errors);
     }
 }

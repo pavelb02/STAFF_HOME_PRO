@@ -1,10 +1,11 @@
 ﻿using Ardalis.GuardClauses;
-using Personnel.Domain.Entities;
+using FluentValidation;
+using Personnel.Domain.Validation;
 
 namespace Personnel.Domain.ValueObjects;
 
 /// <summary>
-/// Represents an address as a value object, consisting of a city and a country.
+/// Адрес.
 /// </summary>
 public class Address : ValueObject
 {
@@ -12,7 +13,7 @@ public class Address : ValueObject
     private string _country = null!;
 
     /// <summary>
-    /// Gets the name of the city associated with the address.
+    /// Город.
     /// </summary>
     public string City
     {
@@ -20,15 +21,12 @@ public class Address : ValueObject
         private set
         {
             Guard.Against.NullOrWhiteSpace(value, nameof(City));
-            if (value.Length > 250)
-                throw new ArgumentException("City length must not exceed 250 characters.", nameof(City));
-
             _city = value;
         }
     }
 
     /// <summary>
-    /// Gets the name of the country associated with the address.
+    /// Страна.
     /// </summary>
     public string Country
     {
@@ -36,9 +34,6 @@ public class Address : ValueObject
         private set
         {
             Guard.Against.NullOrWhiteSpace(value, nameof(Country));
-            if (value.Length > 250)
-                throw new ArgumentException("Country length must not exceed 250 characters.", nameof(Country));
-
             _country = value;
         }
     }
@@ -52,6 +47,11 @@ public class Address : ValueObject
     {
         City = city;
         Country = country;
+
+        var validator = new AddressValidator();
+        var result = validator.Validate(this);
+        if(!result.IsValid)
+            throw new ValidationException(result.Errors);
     }
 
     protected override IEnumerable<object> GetEqualityComponents()

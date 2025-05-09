@@ -1,10 +1,13 @@
 ﻿using System.Text.RegularExpressions;
 using Ardalis.GuardClauses;
+using FluentValidation;
+using Personnel.Domain.Validation;
+using Personnel.Domain.ValueObjects;
 
 namespace Personnel.Domain.Entities;
 
 /// <summary>
-/// Represents a phone number in the specified PMR phone format.
+/// Номер телефона.
 /// </summary>
 public class Phone : ValueObject
 {
@@ -13,7 +16,7 @@ public class Phone : ValueObject
     private string _value = null!;
 
     /// <summary>
-    /// Gets the validated phone number.
+    /// Получает и записыват номер телефона.
     /// </summary>
     public string Value
     {
@@ -22,9 +25,6 @@ public class Phone : ValueObject
         {
             Guard.Against.NullOrWhiteSpace(value, nameof(Phone));
 
-            if (!_pmrPhoneRegex.IsMatch(value))
-                throw new ArgumentException("Invalid PMR phone number format", nameof(value));
-
             _value = value;
         }
     }
@@ -32,10 +32,14 @@ public class Phone : ValueObject
     /// <summary>
     /// Конструктор класса
     /// </summary>
-    /// <param name="number">The phone number to validate and store.</param>
     public Phone(string number)
     {
         Value = number;
+        
+        var validator = new PhoneValidator();
+        var result = validator.Validate(this);
+        if(!result.IsValid)
+            throw new ValidationException(result.Errors.ToString());
     }
 
     protected override IEnumerable<object> GetEqualityComponents()
