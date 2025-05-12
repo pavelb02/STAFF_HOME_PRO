@@ -1,18 +1,14 @@
-﻿using System.Text.RegularExpressions;
 using Ardalis.GuardClauses;
 using FluentValidation;
 using Personnel.Domain.Validation;
-using Personnel.Domain.ValueObjects;
 
-namespace Personnel.Domain.Entities;
+namespace Personnel.Domain.ValueObjects;
 
 /// <summary>
 /// Номер телефона.
 /// </summary>
 public class Phone : ValueObject
 {
-    private static readonly Regex _pmrPhoneRegex = new(@"^\+373(533|552|210|215|557|219|555|216|562|774|775|777|778|779)\d{5}$");
-
     private string _value = null!;
 
     /// <summary>

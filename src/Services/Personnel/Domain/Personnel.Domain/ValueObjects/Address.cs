@@ -43,7 +43,7 @@ public class Address : ValueObject
     /// </summary>
     /// <param name="city">City name.</param>
     /// <param name="country">Country name.</param>
-    public Address(string city, string country)
+    protected internal Address(string city, string country)
     {
         City = city;
         Country = country;
