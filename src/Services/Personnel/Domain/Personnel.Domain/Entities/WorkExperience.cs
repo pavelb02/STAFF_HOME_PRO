@@ -51,7 +51,7 @@ public class WorkExperience
     /// <remarks>
     /// Этот конструктор гарантирует, что данные будут валидны.
     /// </remarks>
-    public WorkExperience(Guid id, string position, string organization, Address address,
+    protected WorkExperience(Guid id, string position, string organization, string city, string country,
         DateTime startDate, DateTime? endDate = null, string? description = null)
     {
         Guard.Against.NullOrWhiteSpace(position, nameof(Position));
@@ -60,7 +60,7 @@ public class WorkExperience
         Id = id;
         Position = position;
         Organization = organization;
-        Address = address;
+        Address = SetAddress(city, country);
         StartDate = startDate;
         EndDate = endDate;
         Description = description;
@@ -69,5 +69,10 @@ public class WorkExperience
         var result = validator.Validate(this);
         if(!result.IsValid)
             throw new ValidationException(result.Errors);
+    }
+
+    private static Address SetAddress(string city, string country)
+    {
+        return new Address(city, country);
     }
 }

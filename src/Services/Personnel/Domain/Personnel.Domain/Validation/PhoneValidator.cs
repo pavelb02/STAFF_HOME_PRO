@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using Personnel.Domain.Entities;
+using Personnel.Domain.ValueObjects;
 
 namespace Personnel.Domain.Validation;
 

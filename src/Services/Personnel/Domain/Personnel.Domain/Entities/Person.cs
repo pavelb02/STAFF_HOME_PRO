@@ -56,51 +56,52 @@ public class Person
     /// </summary>
     public IReadOnlyCollection<WorkExperience> WorkExperiences => _workExperiences.AsReadOnly();
 
-    public Person(Guid id, string firstName, string lastName, string middleName,
-        Email email, Phone phone, DateTime birthDate, Gender gender, string? avatarUrl = null, string? comment = null)
+    protected Person(Guid id, string firstName, string lastName, string middleName,
+        string email, string phone, DateTime birthDate, Gender gender, string? avatarUrl = null, string? comment = null)
     {
         Id = id;
-        Email = email;
-        Phone = phone;
-        SetName(new PersonName(firstName, lastName, middleName));
-        SetEmail(email);
-        SetPhone(phone);
-        SetBirthDate(birthDate);
-        SetGender(gender);
-        SetAvatar(avatarUrl);
-        SetComment(comment);
+        FullName = SetName(firstName, lastName, middleName);
+        Email = SetEmail(email);
+        Phone = SetPhone(phone);
+        BirthDate = birthDate;
+        AvatarUrl = SetAvatar(avatarUrl);
+        Gender = gender;
+        Comment = comment;
     }
 
     /// <summary>
     /// Присвоить ФИО.
     /// </summary>
     /// <param name="name">The new name of the person.</param>
-    public void SetName(PersonName name) => FullName = name;
+    private static PersonName SetName(string firstName, string lastName, string middleName)
+    {
+        return new PersonName(firstName, lastName, middleName);
+    }
 
     /// <summary>
     /// Присвоить электронную почту.
     /// </summary>
     /// <param name="email">The new email address of the person.</param>
-    public void SetEmail(Email email) => Email = email;
+    private static Email SetEmail(string email)
+    {
+        return new Email(email);
+    }
 
     /// <summary>
     /// Присвоить номер телефона.
     /// </summary>
     /// <param name="phone">The new phone number of the person.</param>
-    public void SetPhone(Phone phone) => Phone = phone;
-
-    /// <summary>
-    /// Присвоить дату рождения.
-    /// </summary>
-    /// <param name="birthDate">The new birthdate of the person.</param>
-    public void SetBirthDate(DateTime birthDate) => BirthDate = birthDate;
+    private static Phone SetPhone(string phone)
+    {
+        return new Phone(phone);
+    }
 
     /// <summary>
     /// Присвоить аватарку.
     /// </summary>
     /// <param name="avatarUrl">The new avatar URL of the person. Must be a valid .png or .jpg file path, or null.</param>
     /// <exception cref="ArgumentException">Thrown if the avatar URL does not end with .png or .jpg when not null or empty.</exception>
-    public void SetAvatar(string? avatarUrl)
+    private static string? SetAvatar(string? avatarUrl)
     {
         var validator = new AvatarValidator();
         var result = validator.Validate(avatarUrl);
@@ -109,18 +110,6 @@ public class Person
             throw new ArgumentException(result.Errors.First().ErrorMessage);
         }
 
-        AvatarUrl = avatarUrl;
+        return avatarUrl;
     }
-
-    /// <summary>
-    /// Присвоить гендер.
-    /// </summary>
-    /// <param name="gender">The new gender of the person.</param>
-    public void SetGender(Gender gender) => Gender = gender;
-
-    /// <summary>
-    /// Добавить комментарий.
-    /// </summary>
-    /// <param name="comment">The new comment for the person. Can be null.</param>
-    public void SetComment(string? comment) => Comment = comment;
 }

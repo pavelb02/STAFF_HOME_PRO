@@ -55,7 +55,7 @@ public class PersonName : ValueObject
     /// <summary>
     /// Конструктор класса
     /// </summary>
-    public PersonName(string firstName, string lastName, string middleName)
+    protected internal PersonName(string firstName, string lastName, string middleName)
     {
         FirstName = firstName;
         LastName = lastName;
