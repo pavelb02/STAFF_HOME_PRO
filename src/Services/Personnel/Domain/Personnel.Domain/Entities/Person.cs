@@ -113,39 +113,22 @@ public class Person
 
         return avatarUrl;
     }
-    
+
     /// <summary>
-    /// Добавить Person опыт работы
+    /// Добавить Person опыт работы.
     /// </summary>
-    public Guid AddWorkExperience(Person person, string position, string organization, string city, string country,
-        DateTime startDate)
-    {
-        var workExperience = new WorkExperience(position, organization, city, country, startDate, null, null);
-        person._workExperiences.Add(workExperience);
-        return workExperience.Id;
-    }
-
-    public Person UpdateWorkExperience(Person person, Guid workExperienceId, string? position, string? organization, Address? address,
-        string? description, DateTime? startDate, DateTime? endDate)
-    {
-        var endWorkExperience = person._workExperiences.FirstOrDefault(x => x.Id == workExperienceId);
-        if (endWorkExperience == null)
-        {
-            throw new EntityNotFoundException($"Опыт работы с ID {workExperienceId} не найден.");
-        }
-
-        return person;
-    }
-
     public static Guid AddWorkExperienceToPerson(Person person, string position, string organization, string city, string country,
         DateTime startDate, DateTime? endDate = null, string? description = null)
     {
-        var newWordExperience = WorkExperience.AddWorkExperience(position, organization, city, country, startDate, endDate, description);
-        person._workExperiences.Add(newWordExperience);
+        var workExperience = WorkExperience.AddWorkExperience(position, organization, city, country, startDate, endDate, description);
+        person._workExperiences.Add(workExperience);
 
-        return newWordExperience.Id;
+        return workExperience.Id;
     }
 
+    /// <summary>
+    /// Обновить у Person опыт работы.
+    /// </summary>
     public static Person UpdateWorkExperience(Person person, Guid workExperienceId, string position, string organization, string city, string country,
         DateTime startDate, DateTime? endDate = null, string? description = null)
     {
@@ -162,6 +145,9 @@ public class Person
         return person;
     }
 
+    /// <summary>
+    /// Удалить у Person опыт работы.
+    /// </summary>
     public static Person DeleteWorkExperience(Person person, Guid workExperienceId)
     {
         var workExperience = person._workExperiences.FirstOrDefault(x => x.Id == workExperienceId);
@@ -174,6 +160,9 @@ public class Person
         return person;
     }
 
+    /// <summary>
+    /// Получить все опыты работы Person.
+    /// </summary>
     public static List<WorkExperience> GetAllWorkExperiences(Person person)
     {
         var workExperienceList = person._workExperiences.ToList();

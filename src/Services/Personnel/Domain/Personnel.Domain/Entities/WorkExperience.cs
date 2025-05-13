@@ -51,7 +51,7 @@ public class WorkExperience
     /// <remarks>
     /// Этот конструктор гарантирует, что данные будут валидны.
     /// </remarks>
-    protected internal WorkExperience(string position, string organization, string city, string country,
+    private WorkExperience(string position, string organization, string city, string country,
         DateTime startDate, DateTime? endDate = null, string? description = null)
     {
         Guard.Against.NullOrWhiteSpace(position, nameof(Position));
@@ -76,6 +76,9 @@ public class WorkExperience
         return new Address(city, country);
     }
 
+    /// <summary>
+    /// Добавить опыт работы.
+    /// </summary>
     public static WorkExperience AddWorkExperience(string position, string organization, string city, string country,
         DateTime startDate, DateTime? endDate = null, string? description = null)
     {
@@ -84,6 +87,9 @@ public class WorkExperience
         return workExperience;
     }
 
+    /// <summary>
+    /// Обновить опыт работы.
+    /// </summary>
     public static WorkExperience UpdateWorkExperience(WorkExperience workExperience, string position, string organization, string city, string country,
         DateTime startDate, DateTime? endDate = null, string? description = null)
     {
