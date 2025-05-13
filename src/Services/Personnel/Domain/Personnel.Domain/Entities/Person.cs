@@ -1,4 +1,5 @@
 ﻿using Personnel.Domain.Enum;
+using Personnel.Domain.Exceptions;
 using Personnel.Domain.Validation;
 using Personnel.Domain.ValueObjects;
 
@@ -56,10 +57,10 @@ public class Person
     /// </summary>
     public IReadOnlyCollection<WorkExperience> WorkExperiences => _workExperiences.AsReadOnly();
 
-    protected Person(Guid id, string firstName, string lastName, string middleName,
+    protected Person(string firstName, string lastName, string middleName,
         string email, string phone, DateTime birthDate, Gender gender, string? avatarUrl = null, string? comment = null)
     {
-        Id = id;
+        Id = Guid.NewGuid();
         FullName = SetName(firstName, lastName, middleName);
         Email = SetEmail(email);
         Phone = SetPhone(phone);
@@ -111,5 +112,71 @@ public class Person
         }
 
         return avatarUrl;
+    }
+    
+    /// <summary>
+    /// Добавить Person опыт работы
+    /// </summary>
+    public Guid AddWorkExperience(Person person, string position, string organization, string city, string country,
+        DateTime startDate)
+    {
+        var workExperience = new WorkExperience(position, organization, city, country, startDate, null, null);
+        person._workExperiences.Add(workExperience);
+        return workExperience.Id;
+    }
+
+    public Person UpdateWorkExperience(Person person, Guid workExperienceId, string? position, string? organization, Address? address,
+        string? description, DateTime? startDate, DateTime? endDate)
+    {
+        var endWorkExperience = person._workExperiences.FirstOrDefault(x => x.Id == workExperienceId);
+        if (endWorkExperience == null)
+        {
+            throw new EntityNotFoundException($"Опыт работы с ID {workExperienceId} не найден.");
+        }
+
+        return person;
+    }
+
+    public static Guid AddWorkExperienceToPerson(Person person, string position, string organization, string city, string country,
+        DateTime startDate, DateTime? endDate = null, string? description = null)
+    {
+        var newWordExperience = WorkExperience.AddWorkExperience(position, organization, city, country, startDate, endDate, description);
+        person._workExperiences.Add(newWordExperience);
+
+        return newWordExperience.Id;
+    }
+
+    public static Person UpdateWorkExperience(Person person, Guid workExperienceId, string position, string organization, string city, string country,
+        DateTime startDate, DateTime? endDate = null, string? description = null)
+    {
+        var oldWorkExperience = person._workExperiences.FirstOrDefault(x => x.Id == workExperienceId);
+        if (oldWorkExperience == null)
+        {
+            throw new EntityNotFoundException("Опыт работы с таким Id отсутствует.");
+        }
+
+        var newWorkExperience = WorkExperience.UpdateWorkExperience(oldWorkExperience, position, organization, city, country, startDate, endDate, description);
+        person._workExperiences.Remove(oldWorkExperience);
+        person._workExperiences.Add(newWorkExperience);
+
+        return person;
+    }
+
+    public static Person DeleteWorkExperience(Person person, Guid workExperienceId)
+    {
+        var workExperience = person._workExperiences.FirstOrDefault(x => x.Id == workExperienceId);
+        if (workExperience == null)
+        {
+            throw new EntityNotFoundException("Опыт работы с таким Id отсутствует.");
+        }
+
+        person._workExperiences.Remove(workExperience);
+        return person;
+    }
+
+    public static List<WorkExperience> GetAllWorkExperiences(Person person)
+    {
+        var workExperienceList = person._workExperiences.ToList();
+        return workExperienceList;
     }
 }
