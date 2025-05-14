@@ -14,7 +14,8 @@ public class WorkExperienceValidator : AbstractValidator<WorkExperience>
           .MaximumLength(250).WithMessage("Организация не должна превышать 255 символов.");
 
         RuleFor(x => x.StartDate)
-            .LessThanOrEqualTo(x => x.EndDate)
+            .LessThanOrEqualTo(x => x.EndDate.Value)
+            .When(x => x.EndDate.HasValue)
             .WithMessage("Дата устройства должна быть меньше даты увольнения.");
 
         RuleFor(x => x.EndDate)

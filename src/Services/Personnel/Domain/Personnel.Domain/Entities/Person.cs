@@ -89,7 +89,7 @@ public class Person
         return avatarUrl;
     }
 
-    private void Update(string firstName, string lastName, string middleName,
+    public void Update(string firstName, string lastName, string middleName,
         string email, string phone, DateTime birthDate, Gender gender, string? avatarUrl = null, string? comment = null)
     {
         FullName = new PersonName(firstName, lastName, middleName);
