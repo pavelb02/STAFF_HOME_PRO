@@ -51,7 +51,7 @@ public class WorkExperience
     /// <remarks>
     /// Этот конструктор гарантирует, что данные будут валидны.
     /// </remarks>
-    private WorkExperience(string position, string organization, string city, string country,
+    internal WorkExperience(string position, string organization, string city, string country,
         DateTime startDate, DateTime? endDate = null, string? description = null)
     {
         Guard.Against.NullOrWhiteSpace(position, nameof(Position));
@@ -60,7 +60,7 @@ public class WorkExperience
         Id = Guid.NewGuid();
         Position = position;
         Organization = organization;
-        Address = SetAddress(city, country);
+        Address = new Address(city, country);
         StartDate = startDate;
         EndDate = endDate;
         Description = description;
@@ -71,43 +71,25 @@ public class WorkExperience
             throw new ValidationException(result.Errors);
     }
 
-    private static Address SetAddress(string city, string country)
-    {
-        return new Address(city, country);
-    }
-
-    /// <summary>
-    /// Добавить опыт работы.
-    /// </summary>
-    public static WorkExperience AddWorkExperience(string position, string organization, string city, string country,
-        DateTime startDate, DateTime? endDate = null, string? description = null)
-    {
-        var workExperience = new WorkExperience(position, organization, city, country, startDate, endDate, description);
-
-        return workExperience;
-    }
-
     /// <summary>
     /// Обновить опыт работы.
     /// </summary>
-    public static WorkExperience UpdateWorkExperience(WorkExperience workExperience, string position, string organization, string city, string country,
+    public void Update(string position, string organization, string city, string country,
         DateTime startDate, DateTime? endDate = null, string? description = null)
     {
         Guard.Against.NullOrWhiteSpace(position, nameof(Position));
         Guard.Against.NullOrWhiteSpace(organization, nameof(Organization));
 
-        workExperience.Position = position;
-        workExperience.Organization = organization;
-        workExperience.Address = SetAddress(city, country);
-        workExperience.StartDate = startDate;
-        workExperience.EndDate = endDate;
-        workExperience.Description = description;
+        Position = position;
+        Organization = organization;
+        Address = new Address(city, country);
+        StartDate = startDate;
+        EndDate = endDate;
+        Description = description;
 
         var validator = new WorkExperienceValidator();
-        var result = validator.Validate(workExperience);
+        var result = validator.Validate(this);
         if (!result.IsValid)
             throw new ValidationException(result.Errors);
-
-        return workExperience;
     }
 }

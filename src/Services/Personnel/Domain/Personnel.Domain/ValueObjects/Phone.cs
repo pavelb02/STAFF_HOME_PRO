@@ -31,7 +31,7 @@ public class Phone : ValueObject
     public Phone(string number)
     {
         Value = number;
-        
+
         var validator = new PhoneValidator();
         var result = validator.Validate(this);
         if(!result.IsValid)
