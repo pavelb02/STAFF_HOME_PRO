@@ -51,28 +51,45 @@ public class WorkExperience
     /// <remarks>
     /// Этот конструктор гарантирует, что данные будут валидны.
     /// </remarks>
-    protected WorkExperience(Guid id, string position, string organization, string city, string country,
+    public WorkExperience(string position, string organization, string city, string country,
         DateTime startDate, DateTime? endDate = null, string? description = null)
     {
         Guard.Against.NullOrWhiteSpace(position, nameof(Position));
         Guard.Against.NullOrWhiteSpace(organization, nameof(Organization));
 
-        Id = id;
+        Id = Guid.NewGuid();
         Position = position;
         Organization = organization;
-        Address = SetAddress(city, country);
+        Address = new Address(city, country);
         StartDate = startDate;
         EndDate = endDate;
         Description = description;
 
         var validator = new WorkExperienceValidator();
         var result = validator.Validate(this);
-        if(!result.IsValid)
+        if (!result.IsValid)
             throw new ValidationException(result.Errors);
     }
 
-    private static Address SetAddress(string city, string country)
+    /// <summary>
+    /// Обновить опыт работы.
+    /// </summary>
+    public void Update(string position, string organization, string city, string country,
+        DateTime startDate, DateTime? endDate = null, string? description = null)
     {
-        return new Address(city, country);
+        Guard.Against.NullOrWhiteSpace(position, nameof(Position));
+        Guard.Against.NullOrWhiteSpace(organization, nameof(Organization));
+
+        Position = position;
+        Organization = organization;
+        Address = new Address(city, country);
+        StartDate = startDate;
+        EndDate = endDate;
+        Description = description;
+
+        var validator = new WorkExperienceValidator();
+        var result = validator.Validate(this);
+        if (!result.IsValid)
+            throw new ValidationException(result.Errors);
     }
 }

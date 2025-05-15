@@ -1,4 +1,5 @@
 ﻿using Personnel.Domain.Enum;
+using Personnel.Domain.Exceptions;
 using Personnel.Domain.Validation;
 using Personnel.Domain.ValueObjects;
 
@@ -56,44 +57,17 @@ public class Person
     /// </summary>
     public IReadOnlyCollection<WorkExperience> WorkExperiences => _workExperiences.AsReadOnly();
 
-    protected Person(Guid id, string firstName, string lastName, string middleName,
+    public Person(string firstName, string lastName, string middleName,
         string email, string phone, DateTime birthDate, Gender gender, string? avatarUrl = null, string? comment = null)
     {
-        Id = id;
-        FullName = SetName(firstName, lastName, middleName);
-        Email = SetEmail(email);
-        Phone = SetPhone(phone);
+        Id = Guid.NewGuid();
+        FullName = new PersonName(firstName, lastName, middleName);
+        Email = new Email(email);
+        Phone = new Phone(phone);
         BirthDate = birthDate;
         AvatarUrl = SetAvatar(avatarUrl);
         Gender = gender;
         Comment = comment;
-    }
-
-    /// <summary>
-    /// Присвоить ФИО.
-    /// </summary>
-    /// <param name="name">The new name of the person.</param>
-    private static PersonName SetName(string firstName, string lastName, string middleName)
-    {
-        return new PersonName(firstName, lastName, middleName);
-    }
-
-    /// <summary>
-    /// Присвоить электронную почту.
-    /// </summary>
-    /// <param name="email">The new email address of the person.</param>
-    private static Email SetEmail(string email)
-    {
-        return new Email(email);
-    }
-
-    /// <summary>
-    /// Присвоить номер телефона.
-    /// </summary>
-    /// <param name="phone">The new phone number of the person.</param>
-    private static Phone SetPhone(string phone)
-    {
-        return new Phone(phone);
     }
 
     /// <summary>
@@ -104,6 +78,8 @@ public class Person
     private static string? SetAvatar(string? avatarUrl)
     {
         var validator = new AvatarValidator();
+        if (avatarUrl == null) return avatarUrl;
+
         var result = validator.Validate(avatarUrl);
         if (!result.IsValid)
         {
@@ -111,5 +87,65 @@ public class Person
         }
 
         return avatarUrl;
+    }
+
+    public void Update(string firstName, string lastName, string middleName,
+        string email, string phone, DateTime birthDate, Gender gender, string? avatarUrl = null, string? comment = null)
+    {
+        FullName = new PersonName(firstName, lastName, middleName);
+        Email = new Email(email);
+        Phone = new Phone(phone);
+        BirthDate = birthDate;
+        AvatarUrl = SetAvatar(avatarUrl);
+        Gender = gender;
+        Comment = comment;
+    }
+
+    /// <summary>
+    /// Добавить Person опыт работы.
+    /// </summary>
+    public void AddWorkExperience(string position, string organization, string city, string country,
+        DateTime startDate, DateTime? endDate = null, string? description = null)
+    {
+        var workExperience = new WorkExperience(position, organization, city, country, startDate, endDate, description);
+        _workExperiences.Add(workExperience);
+    }
+
+    /// <summary>
+    /// Обновить у Person опыт работы.
+    /// </summary>
+    public void UpdateWorkExperience(Guid workExperienceId, string position, string organization, string city, string country,
+        DateTime startDate, DateTime? endDate = null, string? description = null)
+    {
+        var workExperience = _workExperiences.FirstOrDefault(x => x.Id == workExperienceId);
+        if (workExperience == null)
+        {
+            throw new EntityNotFoundException("Опыт работы с таким Id отсутствует.");
+        }
+
+        workExperience.Update(position, organization, city, country, startDate, endDate, description);
+    }
+
+    /// <summary>
+    /// Удалить у Person опыт работы.
+    /// </summary>
+    public void DeleteWorkExperience(Guid workExperienceId)
+    {
+        var workExperience = _workExperiences.FirstOrDefault(x => x.Id == workExperienceId);
+        if (workExperience == null)
+        {
+            throw new EntityNotFoundException("Опыт работы с таким Id отсутствует.");
+        }
+
+        _workExperiences.Remove(workExperience);
+    }
+
+    /// <summary>
+    /// Получить все опыты работы Person.
+    /// </summary>
+    public List<WorkExperience> GetAllWorkExperiences()
+    {
+        var workExperienceList = _workExperiences.ToList();
+        return workExperienceList;
     }
 }

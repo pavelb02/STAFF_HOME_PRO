@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Ardalis.GuardClauses;
+﻿using Ardalis.GuardClauses;
+using FluentValidation;
 using Personnel.Domain.Validation;
 
 namespace Personnel.Domain.ValueObjects;
@@ -35,7 +35,7 @@ public class Email : ValueObject
         var validator = new EmailValidator();
         var result = validator.Validate(this);
         if(!result.IsValid)
-            throw new ValidationException(result.Errors.ToString());
+            throw new ValidationException(result.Errors);
     }
 
     protected override IEnumerable<object> GetEqualityComponents()
