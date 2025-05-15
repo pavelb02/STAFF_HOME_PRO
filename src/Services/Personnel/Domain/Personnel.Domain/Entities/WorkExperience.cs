@@ -51,7 +51,7 @@ public class WorkExperience
     /// <remarks>
     /// Этот конструктор гарантирует, что данные будут валидны.
     /// </remarks>
-    internal WorkExperience(string position, string organization, string city, string country,
+    public WorkExperience(string position, string organization, string city, string country,
         DateTime startDate, DateTime? endDate = null, string? description = null)
     {
         Guard.Against.NullOrWhiteSpace(position, nameof(Position));

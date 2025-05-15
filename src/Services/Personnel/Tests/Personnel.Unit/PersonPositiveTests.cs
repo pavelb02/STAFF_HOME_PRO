@@ -1,39 +1,52 @@
-﻿using Personnel.Domain.Entities;
+﻿using Person.DataGenerator;
 using Personnel.Domain.Enum;
 
 namespace Personnel.Unit;
 
 public class PersonPositiveTests
 {
-    [Fact]
-    public void ChangePersonPositiveTest()
+    [Theory]
+    [InlineData("Petr", "Pateykin", "Panteleevich", "email@gmail.com", "+37377756981", "01-05-2001", Gender.Male, "", "It's comment, but he is empty.", "Petr")]
+    public void ChangePersonPositiveTest(string lastName, string firstName, string middleName, string email,
+        string phone, string birthDate, Gender gender, string avatarUrl, string comment, string expectedFirstName)
     {
-        var person = new Person("Pateykin", "Vasiliy", "Panteleevich", "email@gmail.com", "+37377756981", Convert.ToDateTime("01-05-2001"), Gender.Male, "",
-            "It's comment, but he is empty.");
-        person.Update("Pateykin", "Petr", "Panteleevich", "email@gmail.com", "+37377756981", Convert.ToDateTime("01-05-2001"), Gender.Male, "",
-            "It's comment, but he is empty.");
+        //Arrange
+        var person = PersonDataGenerator.CreateDefaultPerson();
 
-        Assert.Equal("Petr", person.FullName.LastName);
+        //Act
+        person.Update(lastName, firstName, middleName, email, phone, Convert.ToDateTime(birthDate), gender, avatarUrl, comment);
+
+        //Assert
+        Assert.Equal(expectedFirstName, person.FullName.FirstName);
     }
 
-    [Fact]
-    public void AddWorkExperiencePositiveTest()
+    [Theory]
+    [InlineData("Cleaner", "Sheriff", "Tiraspol", "Moldova", "01-06-2021")]
+    public void AddWorkExperiencePositiveTest(string position, string organization, string city, string country, string startDate)
     {
-            var person = new Person("Pateykin", "Vasiliy", "Panteleevich", "email@gmail.com", "+37377756981", Convert.ToDateTime("01-05-2001"), Gender.Male, "",
-                "It's comment, but he is empty.");
-            person.AddWorkExperience("Cleaner","Sheriff","Tiraspol","Moldova",Convert.ToDateTime("01-06-2021"));
+        // Arrange
+        var person = PersonDataGenerator.CreateDefaultPerson();
 
+        // Act
+        person.AddWorkExperience(position, organization, city, country, Convert.ToDateTime(startDate));
+
+        // Assert
         Assert.Single(person.WorkExperiences);
     }
 
-    [Fact]
-    public void DeleteWorkExperiencePositiveTest()
+    [Theory]
+    [InlineData("Cleaner", "Sheriff", "Tiraspol", "Moldova", "01-06-2021")]
+    public void DeleteWorkExperiencePositiveTest(string position, string organization, string city, string country, string startDate)
     {
-            var person = new Person("Pateykin", "Vasiliy", "Panteleevich", "email@gmail.com", "+37377756981", Convert.ToDateTime("01-05-2001"), Gender.Male, "",
-                "It's comment, but he is empty.");
-            person.AddWorkExperience("Cleaner","Sheriff","Tiraspol","Moldova",Convert.ToDateTime("01-06-2021"));
-            person.DeleteWorkExperience(person.WorkExperiences.First().Id);
+        // Arrange
+        var person = PersonDataGenerator.CreateDefaultPerson();
+        person.AddWorkExperience(position, organization, city, country, Convert.ToDateTime(startDate));
+        var workExperienceId = person.WorkExperiences.First().Id;
 
+        // Act
+        person.DeleteWorkExperience(workExperienceId);
+
+        // Assert
         Assert.Empty(person.WorkExperiences);
     }
 }

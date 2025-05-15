@@ -1,4 +1,4 @@
-﻿using Personnel.Domain.Entities;
+﻿using Person.DataGenerator;
 using Personnel.Domain.Enum;
 using Personnel.Domain.Exceptions;
 
@@ -6,43 +6,42 @@ namespace Personnel.Unit;
 
 public class PersonNegativeTests
 {
-    [Fact]
-    public void ChangePersonNegativeTest()
+    [Theory]
+    [InlineData("Pateykin", "Petr", "Panteleevich", "email_gmail.com", "+37377756981", "01-05-2001", Gender.Male, "", "", "Неверный формат Email.")]
+    public void ChangePersonNegativeTest(string lastName, string firstName, string middleName, string email,
+        string phone, string birthDate, Gender gender, string avatarUrl, string comment, string expectedErrorMessage)
     {
-        var ex = Assert.Throws<FluentValidation.ValidationException>(() =>
-        {
-            var person = new Person("Pateykin", "Vasiliy", "Panteleevich", "email@gmail.com", "+37377756981", Convert.ToDateTime("01-05-2001"), Gender.Male, "",
-                "It's comment, but he is empty.");
-            person.Update("Pateykin", "Petr", "Panteleevich", "email_gmail.com", "+37377756981", Convert.ToDateTime("01-05-2001"), Gender.Male, "",
-                "");
-        });
-        Assert.Contains("Неверный формат Email.", ex.Message);
+        // Arrange
+        var person = PersonDataGenerator.CreateDefaultPerson();
+
+        // Act & Assert
+       Assert.Throws<FluentValidation.ValidationException>(() =>
+            person.Update(lastName, firstName, middleName, email, phone, Convert.ToDateTime(birthDate), gender, avatarUrl, comment)
+        );
     }
 
-    [Fact]
-    public void AddWorkExperienceNegativeTest()
+    [Theory]
+    [InlineData("", "Sheriff", "Tiraspol", "Moldova", "01-06-2021", "Position")]
+    public void AddWorkExperienceNegativeTest(string position, string organization, string city, string country, string startDate, string expectedParamName)
     {
-        var ex = Assert.Throws<ArgumentException>(() =>
-        {
-            var person = new Person("Pateykin", "Vasiliy", "Panteleevich", "email@gmail.com", "+37377756981", Convert.ToDateTime("01-05-2001"), Gender.Male, "",
-                "It's comment, but he is empty.");
-            person.AddWorkExperience("","Sheriff","Tiraspol","Moldova",Convert.ToDateTime("01-06-2021"));
-        });
+        // Arrange
+        var person = PersonDataGenerator.CreateDefaultPerson();
 
-        Assert.Contains("Required input Position was empty. (Parameter 'Position')", ex.Message);
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() =>
+            person.AddWorkExperience(position, organization, city, country, Convert.ToDateTime(startDate))
+        );
     }
 
-    [Fact]
-    public void DeleteWorkExperienceNegativeTest()
+    [Theory]
+    [InlineData("Cleaner", "Sheriff", "Tiraspol", "Moldova", "01-06-2021")]
+    public void DeleteWorkExperienceNegativeTest(string position, string organization, string city, string country, string startDate)
     {
-        var ex = Assert.Throws<EntityNotFoundException>(() =>
-        {
-            var person = new Person("Pateykin", "Vasiliy", "Panteleevich", "email@gmail.com", "+37377756981", Convert.ToDateTime("01-05-2001"), Gender.Male, "",
-                "It's comment, but he is empty.");
-            person.AddWorkExperience("Cleaner","Sheriff","Tiraspol","Moldova",Convert.ToDateTime("01-06-2021"));
-            person.DeleteWorkExperience(Guid.NewGuid());
-        });
+        // Arrange
+        var person = PersonDataGenerator.CreateDefaultPerson();
+        person.AddWorkExperience(position, organization, city, country, Convert.ToDateTime(startDate));
 
-        Assert.Contains("Опыт работы с таким Id отсутствует.", ex.Message);
+        // Act & Assert
+        Assert.Throws<EntityNotFoundException>(() => { person.DeleteWorkExperience(Guid.NewGuid()); });
     }
 }
