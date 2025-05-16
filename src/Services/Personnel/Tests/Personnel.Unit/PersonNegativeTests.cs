@@ -1,4 +1,4 @@
-﻿using Person.DataGenerator;
+﻿using DataGenerator;
 using Personnel.Domain.Enum;
 using Personnel.Domain.Exceptions;
 

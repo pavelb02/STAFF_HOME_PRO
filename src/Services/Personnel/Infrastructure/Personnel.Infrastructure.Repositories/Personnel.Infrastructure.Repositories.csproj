@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Ardalis.GuardClauses" Version="5.0.0" />
-      <PackageReference Include="FluentValidation" Version="12.0.0" />
+      <ProjectReference Include="..\..\Application\Personnel.Application.Services\Personnel.Application.Services.csproj" />
+      <ProjectReference Include="..\Personnel.Infrastructure.Data\Personnel.Infrastructure.Data.csproj" />
     </ItemGroup>
 
-    </Project>
+</Project>

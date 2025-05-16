@@ -1,12 +1,13 @@
-﻿using Personnel.Domain.Enum;
+﻿using Personnel.Domain.Entities;
+using Personnel.Domain.Enum;
 
-namespace Person.DataGenerator;
+namespace DataGenerator;
 
 public static class PersonDataGenerator
 {
-    public static Personnel.Domain.Entities.Person CreateDefaultPerson()
+    public static Person CreateDefaultPerson()
     {
-        return new Personnel.Domain.Entities.Person(
+        return new Person(
             "Pateykin",
             "Vasiliy",
             "Panteleevich",

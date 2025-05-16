@@ -7,7 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\src\Services\Personnel\Domain\Personnel.Domain\Personnel.Domain.csproj" />
+      <ProjectReference Include="..\..\Domain\Personnel.Domain\Personnel.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="14.0.0" />
     </ItemGroup>
 
 </Project>
