@@ -2,14 +2,15 @@
 using Personnel.Application.Services.Interfaces;
 using Personnel.Domain.Entities;
 using Personnel.Infrastructure.Data;
+using Shared.Domain.Exceptions;
 
 namespace Personnel.Infrastructure.Repositories;
 
 public class PersonRepository : IPersonRepository
 {
-    private readonly MyDbContext _dbContext;
+    private readonly StaffHomeProDbContext _dbContext;
 
-    public PersonRepository(MyDbContext dbContext)
+    public PersonRepository(StaffHomeProDbContext dbContext)
     {
         _dbContext = dbContext;
     }
@@ -23,7 +24,6 @@ public class PersonRepository : IPersonRepository
 
     public Guid Update(Person person)
     {
-        _dbContext.Entry(person).State = EntityState.Modified;
         _dbContext.SaveChanges();
         return person.Id;
     }
@@ -39,17 +39,13 @@ public class PersonRepository : IPersonRepository
         return person;
     }
 
-    public Guid AddWorkExperience(Guid personId, WorkExperience workExperience)
-    {
-        return workExperience.Id;
-    }
-
     public WorkExperience GetWorkExperience(Guid personId, Guid workExperienceId)
     {
-        var person = _dbContext.Persons.Include(person => person.WorkExperiences).FirstOrDefault(c=>c.Id == personId);
+        var person = _dbContext.Persons.Include(person => person.WorkExperiences)
+            .FirstOrDefault(c=>c.Id == personId);
         if (person == null)
         {
-            throw new KeyNotFoundException($"Клиент с Id {personId} не найден.");
+            throw new EntityNotFoundException($"Клиент с Id {personId} не найден.");
         }
 
         var workExperience = person.WorkExperiences.FirstOrDefault(c=>c.Id == workExperienceId);
@@ -59,10 +55,5 @@ public class PersonRepository : IPersonRepository
         }
 
         return workExperience;
-    }
-
-    public Guid UpdateWorkExperience(Guid personId, Guid workExperienceId, WorkExperience workExperience)
-    {
-        return workExperienceId;
     }
 }

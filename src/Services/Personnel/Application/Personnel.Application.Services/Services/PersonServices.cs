@@ -2,6 +2,7 @@
 using Personnel.Application.Services.DTO;
 using Personnel.Application.Services.Interfaces;
 using Personnel.Domain.Entities;
+using Shared.Domain.Exceptions;
 
 namespace Personnel.Application.Services.Services;
 
@@ -18,6 +19,7 @@ public class PersonServices : IPersonService
 
     public Guid CreatePerson(CreatePersonRequest createRequest)
     {
+        ArgumentNullException.ThrowIfNull(createRequest);
         var person = new Person(
             createRequest.FirstName,
             createRequest.LastName,
@@ -35,9 +37,10 @@ public class PersonServices : IPersonService
 
     public Guid UpdatePerson(UpdatePersonRequest updateRequest)
     {
+        ArgumentNullException.ThrowIfNull(updateRequest);
         var person = _personRepository.GetById(updateRequest.Id);
         if (person == null)
-            throw new KeyNotFoundException($"Человек с Id {updateRequest.Id} не найден.");
+            throw new EntityNotFoundException($"Человек с Id {updateRequest.Id} не найден.");
 
         person.Update(
             updateRequest.FirstName,
@@ -63,6 +66,7 @@ public class PersonServices : IPersonService
 
     public Guid AddWorkExperience(Guid personId, WorkExperienceDto workExperienceDto)
     {
+        ArgumentNullException.ThrowIfNull(workExperienceDto);
         var person = _personRepository.GetById(personId);
         person.AddWorkExperience(
             workExperienceDto.Position,
@@ -73,19 +77,19 @@ public class PersonServices : IPersonService
             workExperienceDto.EndDate,
             workExperienceDto.Description);
         _personRepository.Update(person);
-        return Guid.Empty;
+        return workExperienceDto.Id;
     }
 
-    public Guid DeleteWorkExperience(Guid personId, Guid workExperienceId)
+    public void DeleteWorkExperience(Guid personId, Guid workExperienceId)
     {
         var person = _personRepository.GetById(personId);
         person.DeleteWorkExperience(workExperienceId);
         _personRepository.Update(person);
-        return workExperienceId;
     }
 
     public Guid UpdateWorkExperience(Guid personId, UpdateWorkExperienceRequest updateWorkExperienceRequest)
     {
+        ArgumentNullException.ThrowIfNull(updateWorkExperienceRequest);
         var person = _personRepository.GetById(personId);
         person.UpdateWorkExperience(
             updateWorkExperienceRequest.Id,

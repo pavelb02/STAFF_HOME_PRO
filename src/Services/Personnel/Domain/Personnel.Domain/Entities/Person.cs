@@ -1,7 +1,7 @@
 ﻿using Personnel.Domain.Enum;
-using Personnel.Domain.Exceptions;
 using Personnel.Domain.Validation;
 using Personnel.Domain.ValueObjects;
+using Shared.Domain.Exceptions;
 
 namespace Personnel.Domain.Entities;
 

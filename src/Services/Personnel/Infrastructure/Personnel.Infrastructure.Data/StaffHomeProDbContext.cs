@@ -4,12 +4,12 @@ using Personnel.Infrastructure.Data.EntityConfigurations;
 
 namespace Personnel.Infrastructure.Data;
 
-public class MyDbContext : DbContext
+public class StaffHomeProDbContext : DbContext
 {
     public DbSet<Person> Persons { get; set; }
     public DbSet<WorkExperience> WorkExperiences { get; set; }
 
-    public MyDbContext()
+    public StaffHomeProDbContext()
     {
         Database.EnsureCreated();
     }
