@@ -15,44 +15,46 @@ public class PersonRepository : IPersonRepository
         _dbContext = dbContext;
     }
 
-    public Guid Create(Person person)
+    public Task<Guid> CreateAsync(Person person)
     {
         _dbContext.Persons.Add(person);
-        _dbContext.SaveChanges();
-        return person.Id;
+        return Task.FromResult(person.Id);
     }
 
-    public Guid Update(Person person)
+    public Task<Guid> UpdateAsync(Person person)
     {
-        _dbContext.SaveChanges();
-        return person.Id;
+        return Task.FromResult(person.Id);
     }
 
-    public Person GetById(Guid personId)
+    public async Task<Person> GetByIdAsync(Guid personId, bool trackChanges = true)
     {
-        var person = _dbContext.Persons.FirstOrDefault(c=>c.Id == personId);
-        if (person == null)
-        {
-            throw new KeyNotFoundException($"Клиент с Id {personId} не найден.");
-        }
+        var query = _dbContext.Persons.AsQueryable();
 
-        return person;
-    }
+        if (!trackChanges)
+            query = query.AsNoTracking();
 
-    public WorkExperience GetWorkExperience(Guid personId, Guid workExperienceId)
-    {
-        var person = _dbContext.Persons.Include(person => person.WorkExperiences)
-            .FirstOrDefault(c=>c.Id == personId);
+        var person = await query.FirstOrDefaultAsync(c => c.Id == personId).ConfigureAwait(false);
+
+
         if (person == null)
         {
             throw new EntityNotFoundException($"Клиент с Id {personId} не найден.");
         }
 
-        var workExperience = person.WorkExperiences.FirstOrDefault(c=>c.Id == workExperienceId);
+        return person;
+    }
+
+    public async Task<WorkExperience> GetWorkExperienceAsync(Guid personId, Guid workExperienceId)
+    {
+        var workExperience = await _dbContext.Persons
+            .Where(p => p.Id == personId)
+            .SelectMany(p => p.WorkExperiences)
+            .Where(w => w.Id == workExperienceId)
+            .FirstOrDefaultAsync()
+            .ConfigureAwait(false);
+
         if (workExperience == null)
-        {
-            throw new KeyNotFoundException($"Опыт работы с Id {personId} не найден.");
-        }
+            throw new EntityNotFoundException($"Опыт работы с Id {workExperienceId} не найден у клиента {personId}.");
 
         return workExperience;
     }

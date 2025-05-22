@@ -9,15 +9,19 @@ public class StaffHomeProDbContext : DbContext
     public DbSet<Person> Persons { get; set; }
     public DbSet<WorkExperience> WorkExperiences { get; set; }
 
-    public StaffHomeProDbContext()
+    public StaffHomeProDbContext(DbContextOptions<StaffHomeProDbContext> options)
+        : base(options)
     {
-        Database.EnsureCreated();
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseNpgsql("Host=localhost; Port=5432; Database=Staff_Home_Pro; Username=postgres; Password=postgres");
-    }
+    /* для Program.cs
+     
+     var builder = WebApplication.CreateBuilder(args);
+     // builder.Configuration уже загружает appsettings.json
+
+    builder.Services.AddDbContext<StaffHomeProDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("StaffHomeProDatabase")));
+    */
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

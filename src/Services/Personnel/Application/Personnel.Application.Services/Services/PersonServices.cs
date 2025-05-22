@@ -2,7 +2,6 @@
 using Personnel.Application.Services.DTO;
 using Personnel.Application.Services.Interfaces;
 using Personnel.Domain.Entities;
-using Shared.Domain.Exceptions;
 
 namespace Personnel.Application.Services.Services;
 
@@ -10,14 +9,16 @@ public class PersonServices : IPersonService
 {
     private readonly IPersonRepository _personRepository;
     private readonly IMapper _mapper;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public PersonServices(IPersonRepository personRepository, IMapper mapper)
+    public PersonServices(IPersonRepository personRepository, IMapper mapper, IUnitOfWork unitOfWork)
     {
         _personRepository = personRepository;
         _mapper = mapper;
+        _unitOfWork = unitOfWork;
     }
 
-    public Guid CreatePerson(CreatePersonRequest createRequest)
+    public async Task<Guid> CreatePersonAsync(CreatePersonRequest createRequest)
     {
         ArgumentNullException.ThrowIfNull(createRequest);
         var person = new Person(
@@ -32,15 +33,15 @@ public class PersonServices : IPersonService
             createRequest.Comment
         );
 
-        return _personRepository.Create(person);
+        await _personRepository.CreateAsync(person);
+        await _unitOfWork.SaveChangesAsync();
+        return person.Id;
     }
 
-    public Guid UpdatePerson(UpdatePersonRequest updateRequest)
+    public async Task<Guid> UpdatePersonAsync(UpdatePersonRequest updateRequest)
     {
         ArgumentNullException.ThrowIfNull(updateRequest);
-        var person = _personRepository.GetById(updateRequest.Id);
-        if (person == null)
-            throw new EntityNotFoundException($"Человек с Id {updateRequest.Id} не найден.");
+        var person = await _personRepository.GetByIdAsync(updateRequest.Id, true).ConfigureAwait(false);
 
         person.Update(
             updateRequest.FirstName,
@@ -54,20 +55,21 @@ public class PersonServices : IPersonService
             updateRequest.Comment
         );
 
-        return _personRepository.Update(person);
+        await _unitOfWork.SaveChangesAsync();
+        return person.Id;
     }
 
-    public PersonDto GetPerson(Guid personId)
+    public async Task<PersonDto> GetPersonAsync(Guid personId)
     {
-        var person = _personRepository.GetById(personId);
+        var person = await _personRepository.GetByIdAsync(personId, false).ConfigureAwait(false);
 
         return _mapper.Map<PersonDto>(person);
     }
 
-    public Guid AddWorkExperience(Guid personId, WorkExperienceDto workExperienceDto)
+    public async Task AddWorkExperienceAsync(Guid personId, WorkExperienceDto workExperienceDto)
     {
         ArgumentNullException.ThrowIfNull(workExperienceDto);
-        var person = _personRepository.GetById(personId);
+        var person = await _personRepository.GetByIdAsync(personId, true).ConfigureAwait(false);
         person.AddWorkExperience(
             workExperienceDto.Position,
             workExperienceDto.Organization,
@@ -76,21 +78,21 @@ public class PersonServices : IPersonService
             workExperienceDto.StartDate,
             workExperienceDto.EndDate,
             workExperienceDto.Description);
-        _personRepository.Update(person);
-        return workExperienceDto.Id;
+
+        await _unitOfWork.SaveChangesAsync();
     }
 
-    public void DeleteWorkExperience(Guid personId, Guid workExperienceId)
+    public async Task DeleteWorkExperienceAsync(Guid personId, Guid workExperienceId)
     {
-        var person = _personRepository.GetById(personId);
+        var person = await _personRepository.GetByIdAsync(personId, true).ConfigureAwait(false);
         person.DeleteWorkExperience(workExperienceId);
-        _personRepository.Update(person);
+        await _unitOfWork.SaveChangesAsync();
     }
 
-    public Guid UpdateWorkExperience(Guid personId, UpdateWorkExperienceRequest updateWorkExperienceRequest)
+    public async Task<Guid> UpdateWorkExperienceAsync(Guid personId, UpdateWorkExperienceRequest updateWorkExperienceRequest)
     {
         ArgumentNullException.ThrowIfNull(updateWorkExperienceRequest);
-        var person = _personRepository.GetById(personId);
+        var person = await _personRepository.GetByIdAsync(personId, true).ConfigureAwait(false);
         person.UpdateWorkExperience(
             updateWorkExperienceRequest.Id,
             updateWorkExperienceRequest.Position,
@@ -100,7 +102,8 @@ public class PersonServices : IPersonService
             updateWorkExperienceRequest.StartDate,
             updateWorkExperienceRequest.EndDate,
             updateWorkExperienceRequest.Description);
-        _personRepository.Update(person);
+
+        await _unitOfWork.SaveChangesAsync();
         return updateWorkExperienceRequest.Id;
     }
 }

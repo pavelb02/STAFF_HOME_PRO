@@ -4,10 +4,10 @@ namespace Personnel.Application.Services.Interfaces;
 
 public interface IPersonService
 {
-    public Guid CreatePerson(CreatePersonRequest createRequest);
-    public Guid UpdatePerson(UpdatePersonRequest updateRequest);
-    public PersonDto GetPerson(Guid personId);
-    public Guid AddWorkExperience(Guid personId, WorkExperienceDto workExperienceDto);
-    public void DeleteWorkExperience(Guid personId, Guid workExperienceId);
-    public Guid UpdateWorkExperience(Guid personId, UpdateWorkExperienceRequest updateWorkExperienceRequest);
+    public Task<Guid> CreatePersonAsync(CreatePersonRequest createRequest);
+    public Task<Guid> UpdatePersonAsync(UpdatePersonRequest updateRequest);
+    public Task<PersonDto> GetPersonAsync(Guid personId);
+    public Task AddWorkExperienceAsync(Guid personId, WorkExperienceDto workExperienceDto);
+    public Task DeleteWorkExperienceAsync(Guid personId, Guid workExperienceId);
+    public Task<Guid> UpdateWorkExperienceAsync(Guid personId, UpdateWorkExperienceRequest updateWorkExperienceRequest);
 }
