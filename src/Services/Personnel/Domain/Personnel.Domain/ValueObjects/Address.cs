@@ -38,6 +38,10 @@ public class Address : ValueObject
         }
     }
 
+    protected Address()
+    {
+    }
+
     /// <summary>
     /// Конструктор класса
     /// </summary>
