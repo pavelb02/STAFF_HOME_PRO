@@ -57,6 +57,10 @@ public class Person
     /// </summary>
     public IReadOnlyCollection<WorkExperience> WorkExperiences => _workExperiences.AsReadOnly();
 
+    protected Person()
+    {
+    }
+
     public Person(string firstName, string lastName, string middleName,
         string email, string phone, DateTime birthDate, Gender gender, string? avatarUrl = null, string? comment = null)
     {

@@ -10,7 +10,7 @@ public class WorkExperienceEntityTypeConfiguration : IEntityTypeConfiguration<Wo
     {
         builder.ToTable("work_experiences");
 
-        builder.HasKey(w => w.Id);
+        builder.Property(w => w.Id).ValueGeneratedNever().IsRequired().HasColumnName("id");
 
         builder.OwnsOne(w => w.Address, address =>
         {
@@ -45,6 +45,7 @@ public class WorkExperienceEntityTypeConfiguration : IEntityTypeConfiguration<Wo
             .HasColumnName("end_date");
 
         builder.Property<Guid>("person_id");
+        builder.HasKey(w => w.Id);
         builder
             .HasOne<Person>()
             .WithMany()

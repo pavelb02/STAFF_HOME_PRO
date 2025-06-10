@@ -45,6 +45,10 @@ public class WorkExperience
     /// </summary>
     public DateTime? EndDate { get; private set; }
 
+    protected WorkExperience()
+    {
+    }
+
     /// <summary>
     /// Отражает сведения об опыте работы, включая должность, организацию, адрес, описание и соответствующие даты.
     /// </summary>

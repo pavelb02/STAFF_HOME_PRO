@@ -14,15 +14,6 @@ public class StaffHomeProDbContext : DbContext
     {
     }
 
-    /* для Program.cs
-     
-     var builder = WebApplication.CreateBuilder(args);
-     // builder.Configuration уже загружает appsettings.json
-
-    builder.Services.AddDbContext<StaffHomeProDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("StaffHomeProDatabase")));
-    */
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         if (modelBuilder == null) throw new ArgumentException(nameof(modelBuilder));

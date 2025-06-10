@@ -10,6 +10,8 @@ public class PersonEntityTypeConfiguration : IEntityTypeConfiguration<Person>
     {
         builder.ToTable("persons");
 
+        builder.Property(p => p.Id).IsRequired().HasColumnName("id");
+
         builder.OwnsOne(p => p.FullName, fullName =>
         {
             fullName.Property(fn => fn.FirstName).HasColumnName("first_name").HasMaxLength(60).IsRequired();
@@ -20,14 +22,14 @@ public class PersonEntityTypeConfiguration : IEntityTypeConfiguration<Person>
         builder.OwnsOne(p => p.Email, email =>
         {
             email.Property(e => e.Value).HasColumnName("email").HasMaxLength(255).IsRequired();
+            email.HasIndex(e => e.Value).IsUnique();
         });
-        builder.HasIndex("email").IsUnique();
 
         builder.OwnsOne(p => p.Phone, phone =>
         {
             phone.Property(pn => pn.Value).HasColumnName("phone").HasMaxLength(12).IsRequired();
+            phone.HasIndex(pn => pn.Value).IsUnique();
         });
-        builder.HasIndex("phone").IsUnique();
 
         builder.Property(p => p.BirthDate).HasColumnName("birth_date").IsRequired();
         builder.Property(p => p.Gender).HasColumnName("gender").IsRequired();
@@ -35,6 +37,8 @@ public class PersonEntityTypeConfiguration : IEntityTypeConfiguration<Person>
         builder.Property(p => p.Comment).HasColumnName("comment");
 
         builder.HasKey(x => x.Id);
+        builder.Navigation(p => p.WorkExperiences)
+            .AutoInclude();
         builder
             .HasMany(p => p.WorkExperiences)
             .WithOne()

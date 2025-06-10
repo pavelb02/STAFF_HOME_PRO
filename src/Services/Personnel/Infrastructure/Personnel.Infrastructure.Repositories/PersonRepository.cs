@@ -28,13 +28,12 @@ public class PersonRepository : IPersonRepository
 
     public async Task<Person> GetByIdAsync(Guid personId, bool trackChanges = true)
     {
-        var query = _dbContext.Persons.AsQueryable();
+        var query = _dbContext.Persons.Include(p=>p.WorkExperiences).AsQueryable();
 
         if (!trackChanges)
             query = query.AsNoTracking();
 
         var person = await query.FirstOrDefaultAsync(c => c.Id == personId).ConfigureAwait(false);
-
 
         if (person == null)
         {
