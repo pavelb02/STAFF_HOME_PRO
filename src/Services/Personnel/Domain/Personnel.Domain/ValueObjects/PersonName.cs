@@ -52,6 +52,10 @@ public class PersonName : ValueObject
         }
     }
 
+    protected PersonName()
+    {
+    }
+
     /// <summary>
     /// Конструктор класса
     /// </summary>

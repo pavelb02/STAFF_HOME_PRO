@@ -24,6 +24,10 @@ public class Email : ValueObject
         }
     }
 
+    protected Email()
+    {
+    }
+
     /// <summary>
     /// Конструктор, вызывающий приватный set.
     /// </summary>

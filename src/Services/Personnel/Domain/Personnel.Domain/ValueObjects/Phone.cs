@@ -25,6 +25,10 @@ public class Phone : ValueObject
         }
     }
 
+    protected Phone()
+    {
+    }
+
     /// <summary>
     /// Конструктор класса
     /// </summary>

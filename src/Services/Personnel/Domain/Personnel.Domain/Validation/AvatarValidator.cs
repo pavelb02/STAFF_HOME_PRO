@@ -7,7 +7,7 @@ public class AvatarValidator : AbstractValidator<string>
     public AvatarValidator()
     {
         RuleFor(x => x)
-            .Must(x => string.IsNullOrEmpty(x) || x.EndsWith(".png", StringComparison.OrdinalIgnoreCase) || x.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase))
-            .WithMessage("Файл аватарки должен быть с расширением .jpg или .png.");
+            .Must(x => string.IsNullOrEmpty(x) || x.EndsWith(".png", StringComparison.OrdinalIgnoreCase) || x.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) || x.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) || x.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
+            .WithMessage("Файл аватарки должен быть с расширением .jpg, .jpeg, .png. или .svg");
     }
 }

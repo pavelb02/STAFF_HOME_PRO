@@ -1,7 +1,7 @@
 ﻿using Personnel.Domain.Enum;
-using Personnel.Domain.Exceptions;
 using Personnel.Domain.Validation;
 using Personnel.Domain.ValueObjects;
+using Shared.Domain.Exceptions;
 
 namespace Personnel.Domain.Entities;
 
@@ -56,6 +56,10 @@ public class Person
     /// Коллекция с информацией об опыте работы.
     /// </summary>
     public IReadOnlyCollection<WorkExperience> WorkExperiences => _workExperiences.AsReadOnly();
+
+    protected Person()
+    {
+    }
 
     public Person(string firstName, string lastName, string middleName,
         string email, string phone, DateTime birthDate, Gender gender, string? avatarUrl = null, string? comment = null)
