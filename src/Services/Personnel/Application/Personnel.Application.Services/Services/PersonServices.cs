@@ -8,12 +8,14 @@ namespace Personnel.Application.Services.Services;
 public class PersonServices : IPersonService
 {
     private readonly IPersonRepository _personRepository;
+    private readonly IImageService _imageService;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
 
-    public PersonServices(IPersonRepository personRepository, IMapper mapper, IUnitOfWork unitOfWork)
+    public PersonServices(IPersonRepository personRepository, IImageService imageService, IMapper mapper, IUnitOfWork unitOfWork)
     {
         _personRepository = personRepository;
+        _imageService = imageService;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
     }
@@ -42,6 +44,10 @@ public class PersonServices : IPersonService
     {
         ArgumentNullException.ThrowIfNull(updateRequest);
         var person = await _personRepository.GetByIdAsync(updateRequest.Id, true).ConfigureAwait(false);
+        if (!string.IsNullOrEmpty(person.AvatarUrl) && !string.IsNullOrEmpty(updateRequest.AvatarUrl))
+        {
+            await _imageService.DeleteImageAsync(person.AvatarUrl);
+        }
 
         person.Update(
             updateRequest.FirstName,
@@ -64,6 +70,25 @@ public class PersonServices : IPersonService
         var person = await _personRepository.GetByIdAsync(personId, false).ConfigureAwait(false);
 
         return _mapper.Map<PersonDto>(person);
+    }
+
+    public async Task DeletePersonAsync(Guid personId)
+    {
+        var person = await _personRepository.GetByIdAsync(personId, trackChanges: true);
+
+        if (!string.IsNullOrEmpty(person.AvatarUrl))
+        {
+            await _imageService.DeleteImageAsync(person.AvatarUrl);
+        }
+
+        await _personRepository.DeleteAsync(person);
+        await _unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task<string?> GetImageNameAsync(Guid personId)
+    {
+        var person = await _personRepository.GetByIdAsync(personId, false).ConfigureAwait(false);
+        return person.AvatarUrl;
     }
 
     public async Task AddWorkExperienceAsync(Guid personId, WorkExperienceDto workExperienceDto)

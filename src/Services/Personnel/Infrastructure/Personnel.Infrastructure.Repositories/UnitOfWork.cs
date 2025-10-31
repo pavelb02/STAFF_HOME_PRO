@@ -1,7 +1,7 @@
 ﻿using Personnel.Application.Services.Interfaces;
 using Personnel.Infrastructure.Data;
 
-namespace Personnel.Application.Services.Services;
+namespace Personnel.Infrastructure.Repositories;
 
 public class UnitOfWork : IUnitOfWork
 {

@@ -33,7 +33,7 @@ public class PersonEntityTypeConfiguration : IEntityTypeConfiguration<Person>
 
         builder.Property(p => p.BirthDate).HasColumnName("birth_date").IsRequired();
         builder.Property(p => p.Gender).HasColumnName("gender").IsRequired();
-        builder.Property(p => p.AvatarUrl).HasColumnName("avatar_url").HasDefaultValue("https://i.ibb.co/000000/avatar.png");
+        builder.Property(p => p.AvatarUrl).HasColumnName("avatar_url");
         builder.Property(p => p.Comment).HasColumnName("comment");
 
         builder.HasKey(x => x.Id);

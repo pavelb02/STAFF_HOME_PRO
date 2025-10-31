@@ -30,9 +30,7 @@ namespace Personnel.Infrastructure.Data.Migrations
                         .HasColumnName("id");
 
                     b.Property<string>("AvatarUrl")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("text")
-                        .HasDefaultValue("https://i.ibb.co/000000/avatar.png")
                         .HasColumnName("avatar_url");
 
                     b.Property<DateTime>("BirthDate")

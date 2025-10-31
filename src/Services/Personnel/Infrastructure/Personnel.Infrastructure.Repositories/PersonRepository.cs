@@ -43,6 +43,12 @@ public class PersonRepository : IPersonRepository
         return person;
     }
 
+    public async Task DeleteAsync(Person person)
+    {
+        _dbContext.Persons.Remove(person);
+        await Task.CompletedTask;
+    }
+
     public async Task<WorkExperience> GetWorkExperienceAsync(Guid personId, Guid workExperienceId)
     {
         var workExperience = await _dbContext.Persons

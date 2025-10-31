@@ -1,0 +1,58 @@
+﻿version: "3.9"
+
+services:
+    
+    # 1️⃣ .NET API
+    app:
+        build:
+            context: ../../../../..
+            dockerfile: src/Services/Personnel/Api/Personnel.Api/Dockerfile
+        image: personnel.api:latest
+        container_name: personnel_api
+        ports:
+            - "5000:80"
+            - "5001:443"
+        environment:
+            ASPNETCORE_ENVIRONMENT: Docker
+            ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=Staff_Home_Pro_docker;Username=postgres;Password=postgres"
+            Minio__Endpoint: minio:9000
+            Minio__AccessKey: admin
+            Minio__SecretKey: password
+            Minio__BucketName: avatars
+            Minio__UseSSL: "false"
+        depends_on:
+            - postgres
+            - minio                  
+    
+    # 2️⃣ PostgreSQL
+    postgres:
+        image: postgres:17-alpine
+        container_name: postgres_db
+        restart: always
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: Staff_Home_Pro_docker
+        ports:
+            - "5432:5432"
+        volumes:
+            - db_data:/var/lib/postgresql/data
+
+    # 3️⃣ MinIO
+    minio:
+        image: minio/minio
+        container_name: minio
+        ports:
+            - "9000:9000"    # API
+            - "9001:9001"    # Консоль
+        environment:
+            MINIO_ROOT_USER: admin
+            MINIO_ROOT_PASSWORD: password
+        command: server /data --console-address ":9001"
+        volumes:
+            - minio_data:/data
+
+# 4️⃣ Volumes
+volumes:
+    db_data:
+    minio_data:

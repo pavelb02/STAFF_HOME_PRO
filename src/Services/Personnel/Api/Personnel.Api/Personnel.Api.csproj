@@ -6,6 +6,10 @@
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DocumentationFile>bin\Debug\Personnel.Api.xml</DocumentationFile>
+    </PropertyGroup>
+
     <ItemGroup>
       <PackageReference Include="AutoMapper" Version="14.0.0" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.5">
@@ -17,8 +21,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Application\Personnel.Application.Services\Personnel.Application.Services.csproj" />
       <ProjectReference Include="..\..\Infrastructure\Personnel.Infrastructure.Data\Personnel.Infrastructure.Data.csproj" />
+      <ProjectReference Include="..\..\Infrastructure\Personnel.Infrastructure.Minio\Personnel.Infrastructure.Minio.csproj" />
       <ProjectReference Include="..\..\Infrastructure\Personnel.Infrastructure.Repositories\Personnel.Infrastructure.Repositories.csproj" />
     </ItemGroup>
 

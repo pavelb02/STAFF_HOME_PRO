@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Personnel.Api.ValidationDTO;
 using Personnel.Application.Services.DTO;
 using Personnel.Application.Services.Interfaces;
 using Shared.Domain.Exceptions;
@@ -10,10 +11,12 @@ namespace Personnel.Api.Controllers;
 public class PersonController : ControllerBase
 {
     private readonly IPersonService _personService;
+    private readonly IImageService _imageService;
 
-    public PersonController(IPersonService personService)
+    public PersonController(IPersonService personService, IImageService imageService)
     {
         _personService = personService;
+        _imageService = imageService;
     }
 
     [HttpGet("{personId}")]
@@ -24,17 +27,82 @@ public class PersonController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreatePerson([FromBody] CreatePersonRequest request)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> CreatePerson([FromForm] CreatePersonRequest request, IFormFile? avatar)
     {
+        if (avatar != null)
+        {
+            var validator = new ImageValidator();
+            var validationResult = await validator.ValidateAsync(avatar);
+
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+
+            using var stream = avatar.OpenReadStream();
+            var avatarUrl = await _imageService.UploadImageAsync(stream, avatar.FileName, avatar.ContentType);
+            request.AvatarUrl = avatarUrl;
+        }
+        else
+        {
+            request.AvatarUrl = null;
+        }
+
         var response = await _personService.CreatePersonAsync(request);
-        return Ok(response);
+        return StatusCode(201, response);
     }
 
     [HttpPut]
-    public async Task<IActionResult> UpdatePerson([FromBody] UpdatePersonRequest request)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> UpdatePerson([FromForm] UpdatePersonRequest request, IFormFile? avatar)
     {
+        if (avatar != null)
+        {
+            var validator = new ImageValidator();
+            var validationResult = await validator.ValidateAsync(avatar);
+
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+
+            using var stream = avatar.OpenReadStream();
+            var avatarUrl = await _imageService.UploadImageAsync(stream, avatar.FileName, avatar.ContentType);
+            request.AvatarUrl = avatarUrl;
+        }
+        else
+        {
+            request.AvatarUrl = null;
+        }
+
         var response = await _personService.UpdatePersonAsync(request);
         return Ok(response);
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> DeletePerson([FromRoute] Guid personId)
+    {
+        await _personService.DeletePersonAsync(personId);
+        return NoContent();
+    }
+
+    [HttpGet("{personId}/avatar")]
+    public async Task<IActionResult> GetAvatar([FromRoute] Guid personId)
+    {
+        var imagePerson = await _personService.GetImageNameAsync(personId);
+        if (imagePerson == null)
+            return NotFound("Аватарка не найдена.");
+
+        var result = await _imageService.DownloadImageAsync(imagePerson);
+
+        var (stream, fileName) = result.Value;
+
+        var contentType = Path.GetExtension(fileName).ToLower() switch
+        {
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".svg" => "image/svg+xml",
+            _ => "application/octet-stream"
+        };
+
+        return File(stream, contentType, fileName);
     }
 
     /// <summary>
